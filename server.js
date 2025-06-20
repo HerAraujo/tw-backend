@@ -17,7 +17,8 @@ const host = process.env.DB_HOST;
 const uri = `mongodb+srv://${user}:${pass}@${host}/?retryWrites=true&w=majority&appName=Sandbox`;
 
 // Config global
-app.use(cors());
+// app.use(cors());
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
