@@ -3,7 +3,7 @@ const tokenController = require("../controllers/tokenController");
 const apiRouter = express.Router();
 const tweetController = require("../controllers/tweetController");
 const userController = require("../controllers/userController");
-const checkJwt = require("express-jwt");
+const { expressjwt: checkJwt } = require("express-jwt");
 
 require("dotenv").config();
 
