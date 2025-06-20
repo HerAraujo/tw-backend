@@ -18,7 +18,22 @@ const uri = `mongodb+srv://${user}:${pass}@${host}/?retryWrites=true&w=majority&
 
 // Config global
 // app.use(cors());
-app.use(cors({ origin: "*"}));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://tw-frontend.vercel.app" // poné el real cuando lo tengas
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
