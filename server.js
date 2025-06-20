@@ -20,7 +20,7 @@ const uri = `mongodb+srv://${user}:${pass}@${host}/?retryWrites=true&w=majority&
 // app.use(cors());
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://tw-frontend.vercel.app" // poné el real cuando lo tengas
+  "https://tw-frontend.vercel.app"
 ];
 
 app.use(cors({
