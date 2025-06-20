@@ -18,7 +18,7 @@ const uri = `mongodb+srv://${user}:${pass}@${host}/?retryWrites=true&w=majority&
 
 // Config global
 // app.use(cors());
-app.use(cors({ origin: "*", credentials: true }));
+app.use(cors({ origin: "*"}));
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
