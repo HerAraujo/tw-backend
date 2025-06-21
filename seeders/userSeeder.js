@@ -37,7 +37,6 @@ module.exports = async () => {
     profileImage: fixGateway(faker.image.avatar()),
     following: [users[0].id, users[1].id, users[2].id]
   });
-  users.push(tryDemoUser);
 
   await User.create(users);
 
@@ -61,6 +60,7 @@ module.exports = async () => {
       await follower.save();
     }
   }
+  await User.create(tryDemoUser);
 
   console.log("[Database] Se corrió el seeder de Users.");
 };
