@@ -17,7 +17,22 @@ const host = process.env.DB_HOST;
 const uri = `mongodb+srv://${user}:${pass}@${host}/?retryWrites=true&w=majority&appName=Sandbox`;
 
 // Config global
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://tw-frontend.vercel.app",
+  "https://tw-frontend-xi.vercel.app/"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -35,7 +50,7 @@ const startServer = async () => {
     await mongoose.connect(uri);
     console.log("✅ ¡Conexión con la base de datos establecida!");
 
-    await dbInitialSetup();
+    // await dbInitialSetup();
 
     app.listen(APP_PORT, () => {
       console.log(`\n🚀 [Express] Servidor corriendo en el puerto ${APP_PORT}!\n`);

@@ -3,6 +3,7 @@ const User = require("../models/User");
 const { use } = require("../routes/apiRoutes");
 
 async function store(req, res) {
+  console.info("📝 Creando un nuevo tweet por el usuario:", req.user.username);
   const tweet = String(req.body.content);
   const newTweet = await new Tweet({
     author: req.user.id,
@@ -11,57 +12,75 @@ async function store(req, res) {
   }).populate("author");
   await newTweet.save();
   await User.findByIdAndUpdate(req.user.id, { $push: { tweets: newTweet.id } });
+  console.info("✅ Tweet creado exitosamente:", newTweet._id);
   res.status(200).json({ newTweet });
 }
 
 async function destroy(req, res) {
+  console.info("🗑️ Intentando borrar el tweet con ID:", req.params.id);
   const user = User.findById(req.user.id);
   if (user.tweets.includes(req.params.id)) {
     await Tweet.findByIdAndDelete(req.params.id);
+    console.info("✅ Tweet borrado exitosamente:", req.params.id);
     res.status(200).json("Tweet borrado con éxito");
   } else {
+    console.error("❌ El tweet no pertenece al usuario:", user.username);
     res.status(401).json("Este tweet no es tuyo");
   }
 }
 
 async function like(req, res) {
+  console.info("👍 Intentando dar like al tweet con ID:", req.params.id);
   const user = req.user.id;
   const id = req.params.id;
   const tweet = await Tweet.findById(id);
   if (!tweet.likes.includes(user)) {
     await Tweet.findByIdAndUpdate(id, { $push: { likes: user } });
+    console.info(`👍 [${user.username}] Like exitoso al tweet ${tweet.id}.`);
     res.status(200).json("Like exitoso.");
   } else {
+    console.error(`❌ [${user.username}] No puede dar like al tweet ${tweet.id} porque ya lo hizo.`);
     res.status(401).json("No puede dar like porque lo hiciste antes.");
   }
 }
 
 async function dislike(req, res) {
   const user = req.user.id;
+  console.info(`👎 [${req.user.username}] Intentando dar dislike al tweet con ID: ${req.params.id}`);
   const id = req.params.id;
   const tweet = await Tweet.findById(id);
   if (tweet.likes.includes(user)) {
     await Tweet.findByIdAndUpdate(id, { $pull: { likes: user } });
+    console.info(`👎 [${req.user.username}] Dislike exitoso al tweet ${tweet.id}.`);
     res.status(200).json("Dislike exitoso.");
   } else {
+    console.error(`❌ [${req.user.username}] No puede dar dislike al tweet ${tweet.id} porque nunca dio like.`);
     res.status(401).json("Nunca dio like");
   }
 }
-// Otros handlers...
+
 async function show(req, res) {
+  console.info(`🔍 Buscando tweets del usuario: ${req.params.username}`);
   const user = await User.findOne({ username: req.params.username });
   if (!user) return res.status(404).json("No existe el usuario");
   const tweets = await Tweet.find({ author: user.id }).sort({ createdAt: -1 }).populate("author");
+  if (tweets.length === 0) {
+    console.info(`🔍 No se encontraron tweets para el usuario: ${user.username}`);
+    return res.status(404).json("No hay tweets de este usuario");
+  }
+  console.info(`🔍 Tweets encontrados para el usuario ${user.username}:`, tweets.length);
   res.status(200).json({ tweets });
 }
-// ...
+
 async function getTweetsOfFollowing(req, res) {
   const user = await User.findById(req.params.id);
+  console.info(`🔍 Buscando tweets de los usuarios seguidos por: ${user.username}`);
   const tweets = await Tweet.find({ author: { $in: [...user.following, req.user.id] } })
     .sort({ createdAt: -1 })
     .populate("author");
 
-  res.json({ tweets });
+    console.info(`🔍 [${user.username}] Tweets encontrados: ${tweets.length}`);
+    res.json({ tweets });
 }
 module.exports = {
   store,
