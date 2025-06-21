@@ -26,6 +26,7 @@ apiRouter.use(
   checkJwt({
     secret: process.env.ACCESS_TOKEN,
     algorithms: ["HS256"],
+    requestProperty: "user",
   }),
 );
 

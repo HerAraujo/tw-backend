@@ -82,9 +82,9 @@ const pass = encodeURIComponent(process.env.DB_PASS);
 const host = process.env.DB_HOST;
 const uri = `mongodb+srv://${user}:${pass}@${host}/?retryWrites=true&w=majority&appName=Sandbox`;
 
-// 🌐 CORS (debe ir antes que todo)
 const allowedOrigins = [
   "http://localhost:3000",
+  "localhost:3000",
   "https://tw-frontend.vercel.app",
   "https://tw-frontend-xi.vercel.app"
 ];
@@ -107,6 +107,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.set("view engine", "ejs");
 app.use(methodOverride("_method"));
+app.use((req, res, next) => {
+  console.log("Origin:", req.headers.origin);
+  next();
+});
 
 // 🚏 Rutas
 routes(app);
