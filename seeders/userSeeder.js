@@ -5,6 +5,11 @@ const _ = require("lodash");
 
 faker.locale = "es";
 
+function fixGateway(url) {
+  if (!url.includes("cloudflare-ipfs.com")) return url;
+  return url.replace("cloudflare-ipfs.com", "gateway.pinata.cloud");
+}
+
 module.exports = async () => {
   const users = [];
   User.collection.drop();
@@ -17,11 +22,22 @@ module.exports = async () => {
       password: "user",
       email: faker.internet.email(),
       description: faker.lorem.paragraph(),
-      profileImage: faker.image.avatar(),
+      profileImage: fixGateway(faker.image.avatar()),
       following: [],
     });
     users.push(user);
   }
+  const tryDemoUser = new User({
+    firstname: "Demo",
+    lastname: "User",
+    username: "user",
+    password: "user",
+    email: "user@gmail.com",
+    description: "Este es un usuario de demostración.",
+    profileImage: fixGateway(faker.image.avatar()),
+    following: [users[0].id, users[1].id, users[2].id]
+  });
+  users.push(tryDemoUser);
 
   await User.create(users);
 
@@ -45,7 +61,6 @@ module.exports = async () => {
       await follower.save();
     }
   }
-  await User.updateOne({ id: usersToUpdate[0].id }, { username: "user" });
 
   console.log("[Database] Se corrió el seeder de Users.");
 };

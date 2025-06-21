@@ -73,11 +73,10 @@ async function dislike(req, res) {
 async function show(req, res) {
   console.info(`🔍 Buscando tweets del usuario: ${req.params.username}`);
   const user = await User.findOne({ username: req.params.username });
-  if (!user) return res.status(404).json("No existe el usuario");
   const tweets = await Tweet.find({ author: user.id }).sort({ createdAt: -1 }).populate("author");
   if (tweets.length === 0) {
     console.info(`🔍 No se encontraron tweets para el usuario: ${user.username}`);
-    return res.status(200).json([]);
+    return res.status(200).json({ tweets: [] });
   }
   console.info(`🔍 Tweets encontrados para el usuario ${user.username}:`, tweets.length);
   res.status(200).json({ tweets });

@@ -132,7 +132,7 @@ const startServer = async () => {
     await mongoose.connect(uri);
     console.log("✅ ¡Conexión con la base de datos establecida!");
 
-    // await dbInitialSetup();
+    await dbInitialSetup(); // Comment this line if you don't want to run the initial setup every time (Users and tweets seeder)
 
     app.listen(APP_PORT, () => {
       console.log(`\n🚀 [Express] Servidor corriendo en el puerto ${APP_PORT}!\n`);
