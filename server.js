@@ -108,7 +108,7 @@ app.use(bodyParser.json());
 app.set("view engine", "ejs");
 app.use(methodOverride("_method"));
 app.use((req, res, next) => {
-  console.log("Origin:", req.headers.origin);
+  req.headers.origin !== undefined && console.log("Origin:", req.headers.origin);
   next();
 });
 
